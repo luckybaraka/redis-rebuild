@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <errno.h>
-
+#include <stdlib.h>
 
 
 /* 
@@ -18,13 +18,19 @@
  */
 
 int main() {
-	//We take in a socket that takes in 3 params, it takes in the domain, type, and protocol, it returns a file descriptor that is going to be positive and if negative, that is an error and has to be handled.
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
-		return errno;
+		return -1;
+	}
+	int optval = 1;
+	int sockopt = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+	if (sockopt < 0) {
+		perror("setsocketopt");
+		exit(EXIT_FAILURE);
 	}
 	printf("%d\n", fd);
-	return 0;
+	printf("%d\n", sockopt);
+	return EXIT_SUCCESS;
 }
 
 
